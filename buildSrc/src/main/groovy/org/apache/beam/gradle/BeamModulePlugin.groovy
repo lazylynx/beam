@@ -1958,8 +1958,10 @@ class BeamModulePlugin implements Plugin<Project> {
         return argList.join(' ')
       }
 
-      project.ext.toxTask = { name, tox_env ->
+      project.ext.toxTask = { name, tox_env, version ->
         project.tasks.create(name) {
+          project.ext.pythonVersion = version
+
           dependsOn 'setupVirtualenv'
           dependsOn ':sdks:python:sdist'
 
@@ -2081,6 +2083,14 @@ class BeamModulePlugin implements Plugin<Project> {
         addPortableWordCountTask(false, "FlinkRunner")
         addPortableWordCountTask(true, "FlinkRunner")
         addPortableWordCountTask(false, "SparkRunner")
+      }
+
+      project.ext.getVersionSuffix = { String version ->
+        return version == '2.7' ? '2' : version.replace('.', '')
+      }
+
+      project.ext.getTaskRunningPythonVersions = { String propertyName ->
+        return project.getProperty(propertyName).split(',')
       }
     }
   }

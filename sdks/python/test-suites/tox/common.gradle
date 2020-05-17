@@ -16,17 +16,21 @@
  * limitations under the License.
  */
 
-def pythonVersionSuffix = project.ext.pythonVersion.replace('.', '')
+def pythonVersionSuffix = getVersionSuffix(project.ext.pythonVersion)
+def pythonToxEnvSuffix = project.ext.pythonVersion.replace('.', '')
 
-toxTask "testPython${pythonVersionSuffix}", "py${pythonVersionSuffix}"
-test.dependsOn "testPython${pythonVersionSuffix}"
+def testPythonTaskName = "testPython${pythonVersionSuffix}"
+toxTask testPythonTaskName, "py${pythonToxEnvSuffix}", pythonVersion
+test.dependsOn testPythonTaskName
 
-toxTask "testPy${pythonVersionSuffix}Cloud", "py${pythonVersionSuffix}-cloud"
-test.dependsOn "testPy${pythonVersionSuffix}Cloud"
+def cloudTestTaskName = "testPy${pythonVersionSuffix}Cloud"
+toxTask cloudTestTaskName, "py${pythonToxEnvSuffix}-cloud", pythonVersion
+test.dependsOn cloudTestTaskName
 
-toxTask "testPy${pythonVersionSuffix}Cython", "py${pythonVersionSuffix}-cython"
-test.dependsOn "testPy${pythonVersionSuffix}Cython"
+def cythonTestTaskName = "testPy${pythonVersionSuffix}Cython"
+toxTask cythonTestTaskName, "py${pythonToxEnvSuffix}-cython", pythonVersion
+test.dependsOn cythonTestTaskName
 
 project.task("preCommitPy${pythonVersionSuffix}") {
-      dependsOn = ["testPy${pythonVersionSuffix}Cloud", "testPy${pythonVersionSuffix}Cython"]
+      dependsOn = [cloudTestTaskName, cythonTestTaskName]
 }
