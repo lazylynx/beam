@@ -23,7 +23,19 @@
 plugins { id 'org.apache.beam.module' }
 applyPythonNature()
 
-toxTask "docs", "py38-docs"
+def docsTaskNamePrefix = "docsPy"
+
+getListProperty('docs_task_py_versions').each {
+    def versionSuffix = getVersionSuffix(it)
+    def taskName = docsTaskNamePrefix + versionSuffix
+    toxTask taskName, "py${versionSuffix}-docs", it
+}
+
+task docs {
+  dependsOn {
+    tasks.findAll { task -> task.name.startsWith(docsTaskNamePrefix) }
+  }
+}
 assemble.dependsOn docs
 
 task preCommitPyCommon() {

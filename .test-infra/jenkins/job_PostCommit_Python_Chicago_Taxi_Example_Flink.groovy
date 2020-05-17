@@ -47,7 +47,7 @@ def chicagoTaxiJob = { scope ->
     scope.steps {
         gradle {
             rootBuildScriptDir(commonJobProperties.checkoutDir)
-            tasks(':sdks:python:test-suites:portable:py2:chicagoTaxiExample')
+            tasks(':sdks:python:test-suites:portable:chicagoTaxiExample')
             switches('-PgcsRoot=gs://temp-storage-for-perf-tests/chicago-taxi')
             switches("-PpipelineOptions=\"${LoadTestsBuilder.parseOptions(pipelineOptions)}\"")
         }
