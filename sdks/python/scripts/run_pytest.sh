@@ -23,15 +23,31 @@
 #
 # $1 - suite base name
 # $2 - additional arguments to pass to pytest
+# -t - options: indicate test packages if specific tests need to run.
+
+test_targets=""
+
+OPTIONS=$(getopt -o t: -- "$@")
+eval set -- "$OPTIONS"
+while [ $# -gt 0 ]
+do
+  case $1 in
+    -t) if [ -z "$test_targets" ]; then test_targets="$2";
+        else test_targets="$test_targets $2";
+        fi;;
+    --) shift; break;;
+  esac
+  shift
+done
 
 envname=${1?First argument required: suite base name}
 posargs=$2
 
 # Run with pytest-xdist and without.
-pytest -o junit_suite_name=${envname} \
+pytest ${test_targets} -o junit_suite_name=${envname} \
   --junitxml=pytest_${envname}.xml -m 'not no_xdist' -n 6 --pyargs ${posargs}
 status1=$?
-pytest -o junit_suite_name=${envname}_no_xdist \
+pytest ${test_targets} -o junit_suite_name=${envname}_no_xdist \
   --junitxml=pytest_${envname}_no_xdist.xml -m 'no_xdist' --pyargs ${posargs}
 status2=$?
 
