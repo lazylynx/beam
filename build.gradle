@@ -210,16 +210,20 @@ task goIntegrationTests() {
 }
 
 task pythonPreCommit() {
-  dependsOn ":sdks:python:test-suites:tox:pycommon:preCommitPyCommon"
-  dependsOn ":sdks:python:test-suites:tox:py2:preCommitPy2"
-  dependsOn ":sdks:python:test-suites:tox:py35:preCommitPy35"
-  dependsOn ":sdks:python:test-suites:tox:py36:preCommitPy36"
-  dependsOn ":sdks:python:test-suites:tox:py37:preCommitPy37"
-  dependsOn ":sdks:python:test-suites:tox:py38:preCommitPy38"
-  dependsOn ":sdks:python:test-suites:dataflow:py2:preCommitIT"
-  dependsOn ":sdks:python:test-suites:dataflow:py2:preCommitIT_V2"
-  dependsOn ":sdks:python:test-suites:dataflow:py37:preCommitIT"
-  dependsOn ":sdks:python:test-suites:dataflow:py37:preCommitIT_V2"
+  def tasks = [":sdks:python:test-suites:tox:pycommon:preCommitPyCommon",
+               ":sdks:python:test-suites:dataflow:py2:preCommitIT",
+               ":sdks:python:test-suites:dataflow:py2:preCommitIT_V2",
+               ":sdks:python:test-suites:dataflow:py37:preCommitIT",
+               ":sdks:python:test-suites:dataflow:py37:preCommitIT_V2"]
+  high_priority_py_versions.split(',').each {
+    def suffix = it == '2.7' ? '2' : it.replace('.', '')
+    tasks.add(":sdks:python:test-suites:tox:py${suffix}:preCommitPy${suffix}")
+  }
+  low_priority_py_versions.split(',').each {
+    def suffix = it == '2.7' ? '2' : it.replace('.', '')
+    tasks.add(":sdks:python:test-suites:tox:py${suffix}:preCommitPy${suffix}Minimum")
+  }
+  dependsOn = tasks
   // We don't include Py35, Py36 precommit ITs to reduce quota footprint.
   // We can reconsider if we ever see an issue that these suites would
   // have caught. Note that the same tests will still run in postcommit.
@@ -240,6 +244,16 @@ task pythonLintPreCommit() {
 
 task pythonFormatterPreCommit() {
   dependsOn 'sdks:python:test-suites:tox:py38:formatter'
+}
+
+task pythonPostCommit() {
+  // TODO: renamed to better one and this task already defined another branch
+  def tasks = []
+  low_priority_py_versions.split(',').each {
+    def suffix = it == '2.7' ? '2' : it.replace('.', '')
+    tasks.add(":sdks:python:test-suites:tox:py${suffix}:preCommitPy${suffix}")
+  }
+  dependsOn = tasks
 }
 
 task python2PostCommit() {
