@@ -19,6 +19,20 @@
 plugins { id 'org.apache.beam.module' }
 applyPythonNature()
 
-// Required to setup a Python 3 virtualenv and task names.
-pythonVersion = '3.5'
-apply from: '../common.gradle'
+task directRunnerIT {
+  getVersionsAsList('direct_runner_it_task_py_versions').each {
+    dependsOn.add(":sdks:python:test-suites:direct:py${getVersionSuffix(it)}:directRunnerIT")
+  }
+}
+
+task hdfsIntegrationTest {
+  getVersionsAsList('hdfs_integration_test_task_py_versions').each {
+    dependsOn.add("sdks:python:test-suites:direct:py${getVersionSuffix(it)}:hdfsIntegrationTest")
+  }
+}
+
+task mongodbioIT {
+  getVersionsAsList('direct_mongodbio_it_task_py_versions').each {
+    dependsOn.add(":sdks:python:test-suites:direct:py${getVersionSuffix(it)}:mongodbioIT")
+  }
+}
