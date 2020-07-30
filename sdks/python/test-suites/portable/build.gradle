@@ -16,9 +16,24 @@
  * limitations under the License.
  */
 
-apply plugin: org.apache.beam.gradle.BeamModulePlugin
+plugins { id 'org.apache.beam.module' }
 applyPythonNature()
 
-// Required to setup a Python 3.7 virtualenv and task names.
-pythonVersion = '3.7'
-apply from: "../common.gradle"
+task crossLanguageTests {
+  getVersionsAsList('cross_language_task_py_versions').each {
+    dependsOn.add(":sdks:python:test-suites:portable:py${getVersionSuffix(it)}:crossLanguagePythonJavaFlink")
+    dependsOn.add(":sdks:python:test-suites:portable:py${getVersionSuffix(it)}:crossLanguagePortableWordCountFlink")
+  }
+}
+
+task crossLanguagePythonJavaKafkaIOFlink {
+  getVersionsAsList('cross_language_pythonjavakafkaioflink_task_py_versions').each {
+    dependsOn.add(":sdks:python:test-suites:portable:py${getVersionSuffix(it)}:crossLanguagePythonJavaKafkaIOFlink")
+  }
+}
+
+task chicagoTaxiExample {
+  getVersionsAsList('portable_chicago_taxi_example_task_py_versions').each {
+    dependsOn.add(":sdks:python:test-suites:portable:py${getVersionSuffix(it)}:chicagoTaxiExample")
+  }
+}
