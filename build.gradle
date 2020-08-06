@@ -220,13 +220,12 @@ task pythonPreCommit() {
   dependsOn ":sdks:python:test-suites:tox:py36:preCommitPy36"
   dependsOn ":sdks:python:test-suites:tox:py37:preCommitPy37"
   dependsOn ":sdks:python:test-suites:tox:py38:preCommitPy38"
-  dependsOn ":sdks:python:test-suites:dataflow:py2:preCommitIT"
-  dependsOn ":sdks:python:test-suites:dataflow:py2:preCommitIT_V2"
-  dependsOn ":sdks:python:test-suites:dataflow:py37:preCommitIT"
-  dependsOn ":sdks:python:test-suites:dataflow:py37:preCommitIT_V2"
-  // We don't include Py35, Py36 precommit ITs to reduce quota footprint.
-  // We can reconsider if we ever see an issue that these suites would
-  // have caught. Note that the same tests will still run in postcommit.
+  dependsOn ":sdks:python:test-suites:dataflow:preCommitIT"
+  dependsOn ":sdks:python:test-suites:dataflow:preCommitIT_V2"
+  // We don't include all supported Python versions precommit ITs to
+  // reduce quota footprint. We can reconsider if we ever see an issue
+  // that these suites would have caught. Note that the same tests will
+  // still run in postcommit.
 }
 
 task pythonDockerBuildPreCommit() {
@@ -248,9 +247,9 @@ task pythonFormatterPreCommit() {
 
 task python2PostCommit() {
   dependsOn ":sdks:python:test-suites:portable:py2:crossLanguagePythonJavaKafkaIOFlink"
-  dependsOn ":sdks:python:test-suites:portable:py2:crossLanguageTests"
+  dependsOn ":sdks:python:test-suites:portable:crossLanguageTests"
   dependsOn ":sdks:python:test-suites:dataflow:py2:postCommitIT"
-  dependsOn ":sdks:python:test-suites:direct:py2:directRunnerIT"
+  dependsOn ":sdks:python:test-suites:direct:directRunnerIT"
   dependsOn ":sdks:python:test-suites:direct:py2:hdfsIntegrationTest"
   dependsOn ":sdks:python:test-suites:direct:py2:mongodbioIT"
   dependsOn ":sdks:python:test-suites:portable:py2:postCommitPy2"
