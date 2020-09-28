@@ -89,23 +89,48 @@ jobs:
           name: python_sdk_source
           path: sdks/python/dist/apache-beam-source.tar.gz
 
+  setup_python_version_matrix:
+    name: 'Setup Python Version Matrix'
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v2
+        - name: Set Matrix
+          id: set-matrix
+          run: |
+            high_priorities=`cat sdks/python/test-suites/gradle.properties | grep high_priority_python_versions`
+            low_priorities=`cat sdks/python/test-suites/gradle.properties | grep low_priority_python_versions`
+            IFS="," read -ra high_priorities <<< "$high_priorities"
+            IFS="," read -ra low_priorities <<< "$low_priorities"
+            json="["
+            for version in "${high_priorities[@]}";do
+              env=py`echo $version | sed "s/\.//g"`
+              json="$json"{\"py_ver\":\"${version}","tox_env":\"${env}\",\"priority\":\"high\"},
+            done
+            for version in "${low_priorities[@]}";do
+              env=py`echo $version | sed "s/\.//g"`
+              json="$json"{\"py_ver\":\"${version}","tox_env":\"${env}\",\"priority\":\"low\"},
+            done
+            json="${json}"]
+            echo "::set-output name=matrix::{\"include\":"$json"}"
+
   python_unit_tests:
     name: 'Python Unit Tests'
+    needs: setup_python_version_matrix
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        params: [
-          {"py_ver": "3.6", "tox_env": "py36"},
-          {"py_ver": "3.7", "tox_env": "py37"},
-          {"py_ver": "3.8", "tox_env": "py38"},
-        ]
+        params:
+          ${{fromJson(needs.setup_python_version_matrix.outputs.matrix)}}
         exclude:
           # TODO remove exclusion after issue with protobuf is solved
           # https://github.com/protocolbuffers/protobuf/issues/7765
           - os: windows-latest
-            params: {"py_ver": "3.8", "tox_env": "py38"}
+            params: {"py_ver": "3.8", "tox_env": "py38", "priority": "low"}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -119,13 +144,23 @@ jobs:
       - name: Install tox
         run: pip install tox
       - name: Run tests basic unix
-        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
+        if: (startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos'))
+              && matrix.params.priority == 'high'
         working-directory: ./sdks/python
         run: tox -c tox.ini -e ${{ matrix.params.tox_env }}
+      - name: Run tests basic unix minimum
+        if: (startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos'))
+              && matrix.params.priority == 'low'
+        working-directory: ./sdks/python
+        run: tox -c tox.ini -e ${{ matrix.params.tox_env }} apache_beam.typehints
       - name: Run tests basic windows
-        if: startsWith(matrix.os, 'windows')
+        if: startsWith(matrix.os, 'windows') && matrix.params.priority == 'high'
         working-directory: ./sdks/python
         run: tox -c tox.ini -e ${{ matrix.params.tox_env }}-win
+      - name: Run tests basic windows minimum
+        if: startsWith(matrix.os, 'windows') && matrix.params.priority == 'low'
+        working-directory: ./sdks/python
+        run: tox -c tox.ini -e ${{ matrix.params.tox_env }}-win apache_beam.typehints
       - name: Upload test logs
         uses: actions/upload-artifact@v2
         if: always()
