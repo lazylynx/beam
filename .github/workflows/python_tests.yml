@@ -94,27 +94,27 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v2
-        - name: Set Matrix
-          id: set-matrix
-          run: |
-            high_priorities=`cat sdks/python/test-suites/gradle.properties | grep high_priority_python_versions`
-            low_priorities=`cat sdks/python/test-suites/gradle.properties | grep low_priority_python_versions`
-            IFS="," read -ra high_priorities <<< "$high_priorities"
-            IFS="," read -ra low_priorities <<< "$low_priorities"
-            json="["
-            for version in "${high_priorities[@]}";do
-              env=py`echo $version | sed "s/\.//g"`
-              json="$json"{\"py_ver\":\"${version}","tox_env":\"${env}\",\"priority\":\"high\"},
-            done
-            for version in "${low_priorities[@]}";do
-              env=py`echo $version | sed "s/\.//g"`
-              json="$json"{\"py_ver\":\"${version}","tox_env":\"${env}\",\"priority\":\"low\"},
-            done
-            json="${json}"]
-            echo "::set-output name=matrix::{\"include\":"$json"}"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set Matrix
+        id: set-matrix
+        run: |
+          high_priorities=`cat sdks/python/test-suites/gradle.properties | grep high_priority_python_versions`
+          low_priorities=`cat sdks/python/test-suites/gradle.properties | grep low_priority_python_versions`
+          IFS="," read -ra high_priorities <<< "$high_priorities"
+          IFS="," read -ra low_priorities <<< "$low_priorities"
+          json="["
+          for version in "${high_priorities[@]}";do
+            env=py`echo $version | sed "s/\.//g"`
+            json="$json"{\"py_ver\":\"${version}","tox_env":\"${env}\",\"priority\":\"high\"},
+          done
+          for version in "${low_priorities[@]}";do
+            env=py`echo $version | sed "s/\.//g"`
+            json="$json"{\"py_ver\":\"${version}","tox_env":\"${env}\",\"priority\":\"low\"},
+          done
+          json="${json}"]
+          echo "::set-output name=matrix::{\"include\":"$json"}"
 
   python_unit_tests:
     name: 'Python Unit Tests'
