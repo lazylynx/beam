@@ -109,6 +109,12 @@ jobs:
         with:
           path: './sdks/python/test-suites/gradle.properties'
           property: 'high_priority_python_versions'
+      - name: echo high
+        id: echo_high
+        run: echo ${{ steps.read_property_high.outputs.value }}
+      - name: echo low
+        id: echo_low
+        run: echo ${{ steps.read_property_low.outputs.value }}
       - name: Set Matrix
         id: set-matrix
         run: |
@@ -126,7 +132,7 @@ jobs:
             json="$json"{\"py_ver\":\"${version}\",\"tox_env\":\"${env}\",\"priority\":\"low\"},
           done
           json="${json}"]
-          echo "::set-output name=matrix::{\"include\":"$json"}"
+          echo "::set-output name=matrix::${json}"
 
   output_matrix:
     name: 'check matrix'
