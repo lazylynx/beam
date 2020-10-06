@@ -122,7 +122,6 @@ jobs:
           low_priorities=`cat sdks/python/test-suites/gradle.properties | grep low_priority_python_versions`
           IFS="," read -ra high_priorities <<< "${{ steps.read_property_high.outputs.value }}"
           IFS="," read -ra low_priorities <<< "${{ steps.read_property_low.outputs.value }}"
-          json="["
           for version in "${high_priorities[@]}";do
             env=py`echo $version | sed "s/\.//g"`
             json="$json"{\"py_ver\":\"${version}\",\"tox_env\":\"${env}\",\"priority\":\"high\"},
@@ -131,18 +130,7 @@ jobs:
             env=py`echo $version | sed "s/\.//g"`
             json="$json"{\"py_ver\":\"${version}\",\"tox_env\":\"${env}\",\"priority\":\"low\"},
           done
-          json="${json}"]
-          echo "::set-output name=matrix::${json}"
-
-  output_matrix:
-    name: 'check matrix'
-    needs: setup_python_version_matrix
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set Matrix
-        id: set-matrix
-        run:
-          echo ${{fromJson(needs.setup_python_version_matrix.outputs.matrix)}}
+          echo "::set-output name=matrix::[${json}]"
 
   python_unit_tests:
     name: 'Python Unit Tests'
