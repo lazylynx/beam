@@ -27,8 +27,13 @@ test.dependsOn "testPy${pythonVersionSuffix}Cloud"
 toxTask "testPy${pythonVersionSuffix}Cython", "py${pythonVersionSuffix}-cython"
 test.dependsOn "testPy${pythonVersionSuffix}Cython"
 
-toxTask "testPy38CloudCoverage", "py38-cloudcoverage"
-test.dependsOn "testPy38CloudCoverage"
+getVersionsAsList('cloud_coverage_test_py_versions').each {
+    if (pythonVersion.equals(it)) {
+        def taskName = "testPy${pythonVersionSuffix}CloudCoverage"
+        toxTask "${taskName}", "py${pythonVersionSuffix}-cloudcoverage"
+        test.dependsOn "${taskName}"
+    }
+}
 
 project.task("preCommitPy${pythonVersionSuffix}") {
       // Generates coverage reports only once, in Py38, to remove duplicated work
