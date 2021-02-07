@@ -27,16 +27,21 @@ test.dependsOn "testPy${pythonVersionSuffix}Cloud"
 toxTask "testPy${pythonVersionSuffix}Cython", "py${pythonVersionSuffix}-cython"
 test.dependsOn "testPy${pythonVersionSuffix}Cython"
 
-toxTask "testPy38CloudCoverage", "py38-cloudcoverage"
-test.dependsOn "testPy38CloudCoverage"
+if (project.ext.pythonVersion in project.getProperty("using_cloud_coverage_py_versions")) {
+    toxTask "testPy${pythonVersionSuffix}CloudCoverage", "cloudcoverage"
+    test.dependsOn "testPy${pythonVersionSuffix}CloudCoverage"
+}
 
 project.task("preCommitPy${pythonVersionSuffix}") {
-      // Generates coverage reports only once, in Py38, to remove duplicated work
-      if (pythonVersionSuffix.equals('38')) {
-          dependsOn = ["testPy38CloudCoverage", "testPy38Cython",
-              "testPy38pyarrow-0", "testPy38pyarrow-1", "testPy38pyarrow-2",
-              "testPy38pyarrow-3"]
+      dependsOn = []
+      // Generates coverage reports only once, in specific Python version, to remove duplicated work
+      if (project.ext.pythonVersion in project.getProperty("using_cloud_coverage_py_versions")) {
+          dependsOn.add("testPy${pythonVersionSuffix}CloudCoverage")
       } else {
-          dependsOn = ["testPy${pythonVersionSuffix}Cloud", "testPy${pythonVersionSuffix}Cython"]
+          dependsOn.add("testPy${pythonVersionSuffix}Cloud")
+      }
+      dependsOn.add("testPy${pythonVersionSuffix}Cython")
+      if (project.ext.pythonVersion in getVersionsAsList("using_pyarrow_py_versions")) {
+          dependsOn += project.tasks.findAll { "pyarrow" in it.name }
       }
 }
