@@ -16,8 +16,6 @@
 #
 # pytype: skip-file
 
-from __future__ import absolute_import
-
 from future.utils import iteritems
 from hamcrest.core.base_matcher import BaseMatcher
 

@@ -22,9 +22,6 @@ to the Dataflow Service for remote execution by a worker.
 """
 # pytype: skip-file
 
-from __future__ import absolute_import
-from __future__ import division
-
 import base64
 import logging
 import os

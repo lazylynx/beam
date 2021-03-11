@@ -22,8 +22,6 @@
 
 # pytype: skip-file
 
-from __future__ import absolute_import
-
 # Standard file names used for staging files.
 from builtins import object
 
