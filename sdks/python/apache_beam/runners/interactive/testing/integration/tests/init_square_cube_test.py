@@ -18,8 +18,6 @@
 """Integration tests for interactive beam."""
 # pytype: skip-file
 
-from __future__ import absolute_import
-
 import unittest
 
 from apache_beam.runners.interactive.testing.integration.screen_diff import BaseTestCase
