@@ -20,10 +20,7 @@
 
 # pytype: skip-file
 
-from __future__ import absolute_import
-
 import uuid
-from builtins import object
 from threading import Lock
 from threading import Timer
 from typing import TYPE_CHECKING
@@ -422,7 +419,7 @@ class SDFProcessElementInvoker(object):
   produced this class ends the execution and performs steps to finalize the
   current invocation.
   """
-  class Result(object):
+  class Result:
     def __init__(
         self,
         residual_restriction=None,

@@ -19,11 +19,8 @@
 
 # pytype: skip-file
 
-from __future__ import absolute_import
-
 import collections
 import threading
-from builtins import object
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import DefaultDict
@@ -74,7 +71,7 @@ class _ExecutionContext(object):
     self._step_context = None
 
 
-class _SideInputView(object):
+class _SideInputView:
   def __init__(self, view):
     self._view = view
     self.blocked_tasks = collections.deque()
@@ -88,7 +85,7 @@ class _SideInputView(object):
     return '_SideInputView(elements=%s)' % elements_string
 
 
-class _SideInputsContainer(object):
+class _SideInputsContainer:
   """An in-process container for side inputs.
 
   It provides methods for blocking until a side-input is available and writing
@@ -221,7 +218,7 @@ class _SideInputsContainer(object):
         type(side_input), side_input._view_options(), values)
 
 
-class EvaluationContext(object):
+class EvaluationContext:
   """Evaluation context with the global state information of the pipeline.
 
   The evaluation context for a specific pipeline being executed by the
@@ -464,7 +461,7 @@ class DirectUnmergedState(InMemoryUnmergedState):
     super(DirectUnmergedState, self).__init__(defensive_copy=False)
 
 
-class DirectStepContext(object):
+class DirectStepContext:
   """Context for the currently-executing step."""
   def __init__(self, existing_keyed_state):
     self.existing_keyed_state = existing_keyed_state
