@@ -22,18 +22,11 @@
 
 # pytype: skip-file
 
-from __future__ import absolute_import
-from __future__ import division
-
 import math
 import random
-from builtins import hex
-from builtins import object
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Optional
-
-from future.utils import raise_with_traceback
 
 from apache_beam.typehints import TypeCheckError
 from apache_beam.typehints.decorators import _check_instance_type
@@ -245,7 +238,7 @@ class OperationCounters(object):
         error_msg = (
             'Runtime type violation detected within %s: '
             '%s' % (transform_label, e))
-        raise_with_traceback(TypeCheckError(error_msg))
+        raise TypeCheckError(error_msg).with_traceback()
 
   def do_sample(self, windowed_value):
     # type: (windowed_value.WindowedValue) -> None

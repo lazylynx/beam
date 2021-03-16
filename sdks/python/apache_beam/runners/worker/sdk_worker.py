@@ -20,10 +20,6 @@
 # pytype: skip-file
 # mypy: disallow-untyped-defs
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import abc
 import collections
 import contextlib
@@ -34,7 +30,6 @@ import sys
 import threading
 import time
 import traceback
-from builtins import object
 from concurrent import futures
 from typing import TYPE_CHECKING
 from typing import Any
@@ -54,8 +49,6 @@ from typing import TypeVar
 from typing import Union
 
 import grpc
-from future.utils import raise_
-from future.utils import with_metaclass
 
 from apache_beam.coders import coder_impl
 from apache_beam.metrics import monitoring_infos
@@ -799,7 +792,7 @@ class SdkWorker(object):
       yield
 
 
-class StateHandler(with_metaclass(abc.ABCMeta, object)):  # type: ignore[misc]
+class StateHandler(abc.ABCMeta, object):  # type: ignore[misc]
   """An abstract object representing a ``StateHandler``."""
   @abc.abstractmethod
   def get_raw(
@@ -825,7 +818,7 @@ class StateHandler(with_metaclass(abc.ABCMeta, object)):  # type: ignore[misc]
     raise NotImplementedError(type(self))
 
 
-class StateHandlerFactory(with_metaclass(abc.ABCMeta, object)):  # type: ignore[misc]
+class StateHandlerFactory(abc.ABCMeta, object):  # type: ignore[misc]
   """An abstract factory for creating ``DataChannel``."""
   @abc.abstractmethod
   def create_state_handler(self, api_service_descriptor):
@@ -1034,8 +1027,8 @@ class GrpcStateHandler(StateHandler):
     req_future = self._request(request)
     while not req_future.wait(timeout=1):
       if self._exc_info:
-        t, v, tb = self._exc_info
-        raise_(t, v, tb)
+        t, v, _ = self._exc_info
+        t(v).with_trackback()
       elif self._done:
         raise RuntimeError()
     response = req_future.get()

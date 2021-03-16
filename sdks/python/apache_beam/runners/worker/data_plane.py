@@ -20,10 +20,6 @@
 # pytype: skip-file
 # mypy: disallow-untyped-defs
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import abc
 import collections
 import logging
@@ -31,8 +27,6 @@ import queue
 import sys
 import threading
 import time
-from builtins import object
-from builtins import range
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Callable
@@ -49,8 +43,6 @@ from typing import Type
 from typing import Union
 
 import grpc
-from future.utils import raise_
-from future.utils import with_metaclass
 
 from apache_beam.coders import coder_impl
 from apache_beam.portability.api import beam_fn_api_pb2
@@ -226,7 +218,7 @@ class PeriodicThread(threading.Thread):
     self._finished.set()
 
 
-class DataChannel(with_metaclass(abc.ABCMeta, object)):  # type: ignore[misc]
+class DataChannel(abc.ABCMeta, object):  # type: ignore[misc]
   """Represents a channel for reading and writing data over the data plane.
 
   Read data and timer from this channel with the input_elements method::
@@ -474,8 +466,8 @@ class _GrpcDataChannel(DataChannel):
           if abort_callback():
             return
           if self._exc_info:
-            t, v, tb = self._exc_info
-            raise_(t, v, tb)
+            t, v, _ = self._exc_info
+            t(v).with_traceback()
         else:
           if isinstance(element, beam_fn_api_pb2.Elements.Timers):
             if element.is_last:
@@ -641,7 +633,7 @@ class BeamFnDataServicer(beam_fn_api_pb2_grpc.BeamFnDataServicer):
       yield elements
 
 
-class DataChannelFactory(with_metaclass(abc.ABCMeta, object)):  # type: ignore[misc]
+class DataChannelFactory(abc.ABCMeta, object):  # type: ignore[misc]
   """An abstract factory for creating ``DataChannel``."""
   @abc.abstractmethod
   def create_data_channel(self, remote_grpc_port):

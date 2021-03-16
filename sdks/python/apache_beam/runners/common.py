@@ -24,15 +24,9 @@ For internal use only; no backwards-compatibility guarantees.
 
 # pytype: skip-file
 
-from __future__ import absolute_import
-from __future__ import division
 
 import threading
 import traceback
-from builtins import next
-from builtins import object
-from builtins import round
-from builtins import zip
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Dict
@@ -41,9 +35,6 @@ from typing import List
 from typing import Mapping
 from typing import Optional
 from typing import Tuple
-
-from future.utils import raise_with_traceback
-from past.builtins import unicode
 
 from apache_beam.coders import TupleCoder
 from apache_beam.internal import util
@@ -1320,7 +1311,7 @@ class DoFnRunner:
           traceback.format_exception_only(type(exn), exn)[-1].strip() +
           step_annotation)
       new_exn._tagged_with_step = True
-    raise_with_traceback(new_exn)
+    new_exn.with_traceback()
 
 
 class OutputProcessor(object):
@@ -1379,7 +1370,7 @@ class _OutputProcessor(OutputProcessor):
       tag = None
       if isinstance(result, TaggedOutput):
         tag = result.tag
-        if not isinstance(tag, (str, unicode)):
+        if not isinstance(tag, str):
           raise TypeError('In %s, tag %s is not a string' % (self, tag))
         result = result.value
       if isinstance(result, WindowedValue):
@@ -1429,7 +1420,7 @@ class _OutputProcessor(OutputProcessor):
       tag = None
       if isinstance(result, TaggedOutput):
         tag = result.tag
-        if not isinstance(tag, (str, unicode)):
+        if not isinstance(tag, str):
           raise TypeError('In %s, tag %s is not a string' % (self, tag))
         result = result.value
 
