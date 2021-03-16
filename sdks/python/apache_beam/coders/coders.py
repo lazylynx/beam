@@ -22,6 +22,7 @@ Only those coders listed in __all__ are part of the public API of this module.
 # pytype: skip-file
 
 import base64
+import pickle
 from builtins import object
 from typing import TYPE_CHECKING
 from typing import Any
@@ -37,7 +38,6 @@ from typing import TypeVar
 from typing import overload
 
 import google.protobuf.wrappers_pb2
-from future.moves import pickle
 from past.builtins import unicode
 
 from apache_beam.coders import coder_impl
