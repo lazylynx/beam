@@ -39,6 +39,21 @@ class TrivialInferenceTest(unittest.TestCase):
         expected,
         trivial_inference.infer_return_type(f, inputs, debug=True, depth=depth))
 
+  def testBuildListUnpack(self):
+    # Lambda uses BUILD_LIST_UNPACK opcode in Python 3.
+    self.assertReturnType(
+        typehints.List[int],
+        lambda _list: [*_list, *_list, *_list], [typehints.List[int]])
+
+  def testBuildTupleUnpack(self):
+    # Lambda uses BUILD_TUPLE_UNPACK opcode in Python 3.
+    # yapf: disable
+    self.assertReturnType(
+        typehints.Tuple[int, str, str],
+        lambda _list1, _list2: (*_list1, *_list2, *_list2),
+        [typehints.List[int], typehints.List[str]])
+    # yapf: enable
+
   def testIdentity(self):
     self.assertReturnType(int, lambda x: x, [int])
 
