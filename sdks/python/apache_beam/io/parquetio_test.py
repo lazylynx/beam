@@ -30,6 +30,7 @@ import pandas
 import pytest
 from parameterized import param
 from parameterized import parameterized
+from tempfile import TemporaryDirectory
 
 from apache_beam import Create
 from apache_beam import Map
@@ -48,8 +49,6 @@ from apache_beam.testing.util import assert_that
 from apache_beam.testing.util import equal_to
 from apache_beam.transforms.display import DisplayData
 from apache_beam.transforms.display_test import DisplayDataItemMatcher
-# TODO(BEAM-8371): Use tempfile.TemporaryDirectory.
-from apache_beam.utils.subprocess_server_test import TemporaryDirectory
 
 try:
   import pyarrow as pa
