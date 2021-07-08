@@ -181,6 +181,8 @@ def generate_urn_files(log, out_dir):
   def _import(m):
     return import_module('api.%s' % m)
 
+  _import('*')
+
   try:
     beam_runner_api_pb2 = _import('beam_runner_api_pb2')
     metrics_pb2 = _import('metrics_pb2')
@@ -335,11 +337,11 @@ def generate_proto_files(force=False, log=None):
       for path in MODEL_RESOURCES:
         shutil.copy2(os.path.join(py_sdk_root, path), out_dir)
 
-      ret_code = subprocess.call(
-          ["futurize", "--both-stages", "--write", "--no-diff", out_dir])
-      if ret_code:
-        raise RuntimeError(
-            'Error applying futurize to generated protobuf python files.')
+      #ret_code = subprocess.call(
+      #    ["futurize", "--both-stages", "--write", "--no-diff", out_dir])
+      #if ret_code:
+      #  raise RuntimeError(
+      #      'Error applying futurize to generated protobuf python files.')
 
       generate_urn_files(log, out_dir)
 
